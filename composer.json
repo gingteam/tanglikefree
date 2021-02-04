@@ -1,0 +1,23 @@
+{
+    "name": "ging-dev/facebook",
+    "description": "Facebook Graph API",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ging-dev",
+            "email": "thanh1101dev@gmail.com"
+        }
+    ],
+    "require": {
+        "php-curl-class/php-curl-class": "^8.9",
+        "symfony/console": "^5.1",
+        "ging-dev/facebook-tool": "^1.0",
+        "league/climate": "^3.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Gingdev\\Tools\\": "src/"
+        }
+    }
+}
