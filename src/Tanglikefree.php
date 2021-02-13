@@ -34,10 +34,12 @@ class Tanglikefree
                 'password' => $password,
                 'disable'  => true,
             ]);
+
             $response = $curl->response;
 
             if ($response->error) {
-                throw new \Exception('Login failed.');
+                // Re-tries
+                return new self();
             }
 
             $token->set($response->data->access_token);
@@ -52,28 +54,16 @@ class Tanglikefree
         $this->curl = $curl;
     }
 
-    protected function get(string $path)
+    public function request($action, $path, array $params = [])
     {
-        $this->curl->get(self::BASE_URL.'/'.$path);
+        $this->curl->$action(self::BASE_URL.'/'.$path, $params);
 
-        return $this->response();
-    }
-
-    protected function post(string $path, array $params = [])
-    {
-        $this->curl->post(self::BASE_URL.'/'.$path, $params);
-
-        return $this->response();
-    }
-
-    protected function response()
-    {
         return $this->curl->response;
     }
 
     public function receiveCoins(string $id)
     {
-        return $this->post('Post/submitpost', [
+        return $this->request('post', 'Post/submitpost', [
             'idpost'     => $id,
             'request_id' => $this->csrf(),
         ]);
@@ -81,11 +71,17 @@ class Tanglikefree
 
     public function getPostTask()
     {
-        return $this->get('Post/getpost');
+        $data  = [];
+        $posts = $this->request('get', 'Post/getpost');
+        foreach ($posts as $post) {
+            $data[] = $post->idpost;
+        }
+
+        return $data;
     }
 
     private function csrf(): string
     {
-        return $this->get('creat_request')->request_id;
+        return $this->request('get', 'creat_request')->request_id;
     }
 }
