@@ -1,7 +1,5 @@
 <?php
 
-// src/Command/CreateUserCommand.php
-
 namespace Gingdev\Tools;
 
 use Facebook\FacebookSession;
@@ -12,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class MainCommand extends Command
 {
-    protected static $defaultName = 'default';
+    protected static $defaultName = 'tanglikefree:run';
     protected $errorList          = [];
     protected $fb;
     protected $task;
@@ -20,8 +18,6 @@ class MainCommand extends Command
     protected function configure()
     {
         FacebookSession::enableAppSecretProof(false);
-        $this->fb   = new Facebook('default');
-        $this->task = new Tanglikefree();
     }
 
     protected function runTask(OutputInterface $output)
@@ -37,7 +33,7 @@ class MainCommand extends Command
             try {
                 $this->fb->request('POST', '/'.$post.'/likes')->execute();
                 $result = $this->task->receiveCoins($post);
-                $output->writeln('<'.($result->error ? 'comment' : 'info').'>'.$result->messages.'</>');
+                $output->writeln('<'.($result['error'] ? 'comment' : 'info').'>'.$result['messages'].'</>');
                 ++$success;
             } catch (\Throwable $e) {
                 $output->writeln('<error>'.$e->getMessage().'</>');
@@ -57,10 +53,19 @@ class MainCommand extends Command
     {
         $output->writeln('TangLikeFree Tool v1.0');
 
+        try {
+            $this->fb = new Facebook('default');
+        } catch (\LogicException $e) {
+            $output->writeln('<error>Đăng nhập facebook trước</>');
+
+            return Command::FAILURE;
+        }
+        $output->writeln('<info>Đăng nhập tanglikefree.com</>');
+
+        $this->task = new Task();
+
         $this->runTask($output);
 
         return Command::SUCCESS;
-
-        // return Command::FAILURE;
     }
 }

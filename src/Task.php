@@ -8,7 +8,7 @@ use Curl\Curl;
 use League\CLImate\CLImate;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
-class Tanglikefree
+class Task
 {
     const BASE_URL = 'https://tanglikefree.com/api/auth';
     const REFERER  = 'https://tanglikefree.com/makemoney';
@@ -23,11 +23,12 @@ class Tanglikefree
 
         $curl->setHeader('X-Requested-With', 'XMLHttpRequest');
         $curl->setHeader('Referer', self::REFERER);
+        $curl->setDefaultJsonDecoder(true);
 
         if (!$token->isHit()) {
             $climate  = new CLImate();
-            $username = $climate->input('Enter user:')->prompt();
-            $password = $climate->input('Enter pass:')->prompt();
+            $username = $climate->input('Tài khoản:')->prompt();
+            $password = $climate->input('Mật khẩu:')->prompt();
 
             $curl->post(self::BASE_URL.'/login', [
                 'username' => $username,
@@ -37,12 +38,12 @@ class Tanglikefree
 
             $response = $curl->response;
 
-            if ($response->error) {
+            if ($response['error']) {
                 // Re-tries
                 return new self();
             }
 
-            $token->set($response->data->access_token);
+            $token->set($response['data']['access_token']);
             $cache->save($token);
         }
 
@@ -71,17 +72,13 @@ class Tanglikefree
 
     public function getPostTask()
     {
-        $data  = [];
-        $posts = $this->request('get', 'Post/getpost');
-        foreach ($posts as $post) {
-            $data[] = $post->idpost;
-        }
+        $data = $this->request('get', 'Post/getpost');
 
-        return $data;
+        return array_column($data, 'idpost');
     }
 
     private function csrf(): string
     {
-        return $this->request('get', 'creat_request')->request_id;
+        return $this->request('get', 'creat_request')['request_id'];
     }
 }
