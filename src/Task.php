@@ -6,7 +6,7 @@ namespace Gingdev\Tools;
 
 use Curl\Curl;
 use League\CLImate\CLImate;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class Task
 {
@@ -17,9 +17,9 @@ class Task
 
     public function __construct()
     {
-        $cache = new FilesystemAdapter();
+        $cache = new PhpFilesAdapter('', 0, __DIR__.'/../cache');
         $curl  = new Curl();
-        $token = $cache->getItem('tanglikefree.token');
+        $token = $cache->getItem('token');
 
         $curl->setHeader('X-Requested-With', 'XMLHttpRequest');
         $curl->setHeader('Referer', self::REFERER);

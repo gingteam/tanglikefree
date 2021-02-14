@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class MainCommand extends Command
 {
-    protected static $defaultName = 'tanglikefree:run';
+    protected static $defaultName = 'run';
     protected $errorList          = [];
     protected $fb;
     protected $task;
@@ -54,7 +54,7 @@ class MainCommand extends Command
         $output->writeln('TangLikeFree Tool v1.0');
 
         try {
-            $this->fb = new Facebook('default');
+            $this->fb = new Facebook();
         } catch (\LogicException $e) {
             $output->writeln('<error>Đăng nhập facebook trước</>');
 
