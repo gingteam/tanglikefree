@@ -17,7 +17,7 @@ class Task
 
     public function __construct()
     {
-        $cache = new PhpFilesAdapter('', 0, __DIR__.'/../cache');
+        $cache = new PhpFilesAdapter('cache', 0, __DIR__);
         $curl  = new Curl();
         $token = $cache->getItem('token');
 
